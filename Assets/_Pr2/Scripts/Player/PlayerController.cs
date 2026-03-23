@@ -74,22 +74,33 @@ namespace _Pr2.Scripts.Player
         private void OnTriggerEnter2D(Collider2D other)
         {
             var spike = other.GetComponent<Spike>();
-            if (spike == null)
+            if (spike != null)
+            {
+                if (GameManager.Instance != null)
+                {
+                    GameManager.Instance.ApplyDamage(spike.Damage);
+                }
+
+                Destroy(spike.gameObject);
+                return;
+            }
+
+            var coin = other.GetComponent<Coin>();
+            if (coin == null)
             {
                 return;
             }
 
             if (GameManager.Instance != null)
             {
-                GameManager.Instance.ApplyDamage(spike.Damage);
+                GameManager.Instance.AddScore(coin.ScoreValue);
             }
 
-            Destroy(spike.gameObject);
+            Destroy(coin.gameObject);
         }
 
         private bool CheckGrounded()
         {
-
             var bounds = playerCollider.bounds;
             var origin = new Vector2(bounds.center.x, bounds.min.y);
             var size = new Vector2(bounds.size.x * 0.95f, groundCheckDistance);
