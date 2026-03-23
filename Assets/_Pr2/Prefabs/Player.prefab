@@ -49,10 +49,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveAction: {fileID: 2573408729401766509, guid: bf015797727efad4ea1475203a433de3, type: 3}
   jumpAction: {fileID: 5906084389275402798, guid: bf015797727efad4ea1475203a433de3, type: 3}
+  healAction: {fileID: 9075802268925781805, guid: bf015797727efad4ea1475203a433de3, type: 3}
   rb: {fileID: 4032717294339608803}
   playerCollider: {fileID: 8839993864306234121}
   moveSpeed: 8
   jumpForce: 15
+  healTickInterval: 1
   groundLayers:
     serializedVersion: 2
     m_Bits: 64

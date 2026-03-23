@@ -9,44 +9,62 @@ namespace _Pr2.Scripts.Player
     {
         [SerializeField] private InputActionReference moveAction;
         [SerializeField] private InputActionReference jumpAction;
+        [SerializeField] private InputActionReference healAction;
         [SerializeField] private Rigidbody2D rb;
         [SerializeField] private Collider2D playerCollider;
         [SerializeField] private float moveSpeed = 8f;
         [SerializeField] private float jumpForce = 12f;
+        [SerializeField] private float healTickInterval = 1f;
         [SerializeField] private LayerMask groundLayers = ~0;
         [SerializeField] private float groundCheckDistance = 0.05f;
         [SerializeField] private float jumpBufferTime = 0.1f;
 
         private float jumpBufferCounter;
+        private float healTickTimer;
         private bool isGrounded;
-
-        private void Awake()
-        {
-            if (!rb)
-            {
-                rb = GetComponent<Rigidbody2D>();
-            }
-
-            if (!playerCollider)
-            {
-                playerCollider = GetComponent<Collider2D>();
-            }
-        }
 
         private void OnEnable()
         {
             moveAction?.action?.Enable();
             jumpAction?.action?.Enable();
+            healAction?.action?.Enable();
         }
 
         private void OnDisable()
         {
             moveAction?.action?.Disable();
             jumpAction?.action?.Disable();
+            healAction?.action?.Disable();
         }
 
         private void Update()
         {
+            bool isHealing = healAction && healAction.action.IsPressed();
+
+            if (isHealing)
+            {
+                jumpBufferCounter = 0f;
+
+                if (healTickTimer <= 0f)
+                {
+                    healTickTimer = healTickInterval;
+                }
+                else
+                {
+                    healTickTimer -= Time.deltaTime;
+
+                    if (healTickTimer <= 0f && GameManager.Instance)
+                    {
+                        GameManager.Instance.TryHealTick();
+                        healTickTimer = healTickInterval;
+                    }
+                }
+
+                return;
+            }
+
+            healTickTimer = 0f;
+
             if (jumpAction && jumpAction.action.triggered)
             {
                 jumpBufferCounter = jumpBufferTime;
