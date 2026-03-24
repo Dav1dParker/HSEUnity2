@@ -181,7 +181,7 @@ MonoBehaviour:
   healTickInterval: 1
   groundLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 64
   groundCheckDistance: 0.05
-  jumpForce: 12
+  jumpForce: 15
   jumpBufferTime: 0.1

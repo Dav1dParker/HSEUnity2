@@ -24,4 +24,4 @@ MemoryCaptures/
 *.pdb
 *.mdb
 *.opendb
-*.VC.db
+*.VC.db.dotnet/
