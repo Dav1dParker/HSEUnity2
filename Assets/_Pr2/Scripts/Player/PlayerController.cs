@@ -5,27 +5,44 @@ using UnityEngine.InputSystem;
 
 namespace _Pr2.Scripts.Player
 {
-    public sealed class PlayerController : MonoBehaviour
+    public abstract class PlayerController : MonoBehaviour
     {
         [SerializeField] private InputActionReference moveAction;
+        [SerializeField] private InputActionReference upAction;
         [SerializeField] private InputActionReference jumpAction;
         [SerializeField] private InputActionReference healAction;
         [SerializeField] private Rigidbody2D rb;
         [SerializeField] private Collider2D playerCollider;
         [SerializeField] private float moveSpeed = 8f;
-        [SerializeField] private float jumpForce = 12f;
         [SerializeField] private float healTickInterval = 1f;
         [SerializeField] private LayerMask groundLayers = ~0;
         [SerializeField] private float groundCheckDistance = 0.05f;
-        [SerializeField] private float jumpBufferTime = 0.1f;
 
-        private float jumpBufferCounter;
         private float healTickTimer;
-        private bool isGrounded;
+
+        protected Rigidbody2D Body => rb;
+        protected InputActionReference UpAction => upAction;
+        protected InputActionReference JumpAction => jumpAction;
+        protected InputActionReference HealAction => healAction;
+        protected bool IsGrounded { get; private set; }
+
+        protected virtual void Awake()
+        {
+            if (!rb)
+            {
+                rb = GetComponent<Rigidbody2D>();
+            }
+
+            if (!playerCollider)
+            {
+                playerCollider = GetComponent<Collider2D>();
+            }
+        }
 
         private void OnEnable()
         {
             moveAction?.action?.Enable();
+            upAction?.action?.Enable();
             jumpAction?.action?.Enable();
             healAction?.action?.Enable();
         }
@@ -33,17 +50,18 @@ namespace _Pr2.Scripts.Player
         private void OnDisable()
         {
             moveAction?.action?.Disable();
+            upAction?.action?.Disable();
             jumpAction?.action?.Disable();
             healAction?.action?.Disable();
         }
 
         private void Update()
         {
-            bool isHealing = healAction && healAction.action.IsPressed();
+            bool isHealing = IsHealPressed();
 
             if (isHealing)
             {
-                jumpBufferCounter = 0f;
+                ClearPrimaryAction();
 
                 if (healTickTimer <= 0f)
                 {
@@ -64,29 +82,17 @@ namespace _Pr2.Scripts.Player
             }
 
             healTickTimer = 0f;
-
-            if (jumpAction && jumpAction.action.triggered)
-            {
-                jumpBufferCounter = jumpBufferTime;
-            }
-            else if (jumpBufferCounter > 0f)
-            {
-                jumpBufferCounter -= Time.deltaTime;
-            }
+            HandlePrimaryActionInput();
         }
 
         private void FixedUpdate()
         {
-            isGrounded = CheckGrounded();
+            IsGrounded = CheckGrounded(GetGroundCheckDirection());
 
-            var horizontalInput = moveAction ? moveAction.action.ReadValue<float>() : 0f;
-            rb.velocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
+            float horizontalInput = moveAction ? moveAction.action.ReadValue<float>() : 0f;
+            Body.velocity = new Vector2(horizontalInput * moveSpeed, Body.velocity.y);
 
-            if (jumpBufferCounter > 0f && isGrounded)
-            {
-                rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-                jumpBufferCounter = 0f;
-            }
+            HandlePrimaryActionPhysics();
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -117,12 +123,28 @@ namespace _Pr2.Scripts.Player
             Destroy(coin.gameObject);
         }
 
-        private bool CheckGrounded()
+        protected virtual bool IsHealPressed()
+        {
+            return HealAction && HealAction.action.IsPressed();
+        }
+
+        protected virtual float GetGroundCheckDirection()
+        {
+            return 1f;
+        }
+
+        protected abstract void HandlePrimaryActionInput();
+        protected abstract void HandlePrimaryActionPhysics();
+        protected abstract void ClearPrimaryAction();
+
+        private bool CheckGrounded(float groundCheckDirection)
         {
             var bounds = playerCollider.bounds;
-            var origin = new Vector2(bounds.center.x, bounds.min.y);
+            float edgeY = groundCheckDirection > 0f ? bounds.min.y : bounds.max.y;
+            var origin = new Vector2(bounds.center.x, edgeY);
             var size = new Vector2(bounds.size.x * 0.95f, groundCheckDistance);
-            var hit = Physics2D.OverlapBox(origin + Vector2.down * (groundCheckDistance * 0.5f), size, 0f, groundLayers);
+            var offset = Vector2.down * (groundCheckDistance * 0.5f * groundCheckDirection);
+            var hit = Physics2D.OverlapBox(origin + offset, size, 0f, groundLayers);
             return hit && hit != playerCollider;
         }
     }

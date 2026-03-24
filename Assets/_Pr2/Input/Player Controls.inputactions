@@ -15,7 +15,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Jump",
+                    "name": "Up",
                     "type": "Button",
                     "id": "7ae764af-f34a-4b5e-a769-c844cae88b17",
                     "expectedControlType": "Button",
@@ -27,6 +27,15 @@
                     "name": "Heal",
                     "type": "Button",
                     "id": "1176850c-6d28-4cd0-a305-0a9e00b88263",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Jump",
+                    "type": "Button",
+                    "id": "a8997fa9-3819-4baf-a631-888bdbce1457",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -102,23 +111,12 @@
                 },
                 {
                     "name": "",
-                    "id": "affb3eb1-dc1d-45c0-b5a1-478ac61eb08b",
-                    "path": "<Keyboard>/space",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Jump",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "45408d41-97d1-4388-968f-bd5a17eed8de",
                     "path": "<Keyboard>/w",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Jump",
+                    "action": "Up",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -129,7 +127,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Jump",
+                    "action": "Up",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -152,6 +150,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Heal",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a37d7069-a86f-4e1a-8605-0a6c95424674",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
