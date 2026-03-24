@@ -307,6 +307,9 @@ MonoBehaviour:
   minObjectSpeed: 5.5
   maxObjectSpeed: 8
   objectSpacing: 1
+  speedUpWithTime: 0
+  speedIncreasePerSecond: 0.1
+  maxSpeed: 12
 --- !u!1 &359718167
 GameObject:
   m_ObjectHideFlags: 0
@@ -1826,6 +1829,9 @@ MonoBehaviour:
   minObjectSpeed: 5.5
   maxObjectSpeed: 8
   objectSpacing: 1
+  speedUpWithTime: 1
+  speedIncreasePerSecond: 0.1
+  maxSpeed: 25
 --- !u!4 &1700000012
 Transform:
   m_ObjectHideFlags: 0

@@ -12,8 +12,12 @@ namespace _Pr2.Scripts.Core
         [SerializeField] private float minObjectSpeed = 5.5f;
         [SerializeField] private float maxObjectSpeed = 8f;
         [SerializeField] private float objectSpacing = 1.25f;
+        [SerializeField] private bool speedUpWithTime;
+        [SerializeField] private float speedIncreasePerSecond = 0.1f;
+        [SerializeField] private float maxSpeed = 12f;
 
         private float spawnTimer;
+        private float elapsedTime;
 
         private void Start()
         {
@@ -22,6 +26,11 @@ namespace _Pr2.Scripts.Core
 
         private void Update()
         {
+            if (speedUpWithTime)
+            {
+                elapsedTime += Time.deltaTime;
+            }
+
             spawnTimer -= Time.deltaTime;
             if (spawnTimer > 0f)
             {
@@ -37,6 +46,11 @@ namespace _Pr2.Scripts.Core
             var despawnX = despawnPoint ? despawnPoint.position.x : float.NegativeInfinity;
             var objectCount = Random.Range(1, 4);
             var moveSpeed = Random.Range(minObjectSpeed, maxObjectSpeed);
+
+            if (speedUpWithTime)
+            {
+                moveSpeed = Mathf.Min(moveSpeed + elapsedTime * speedIncreasePerSecond, maxSpeed);
+            }
 
             for (var i = 0; i < objectCount; i++)
             {
