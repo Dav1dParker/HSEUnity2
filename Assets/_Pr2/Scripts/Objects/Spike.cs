@@ -4,7 +4,7 @@ namespace _Pr2.Scripts.Objects
 {
     public sealed class Spike : ScrollingObject
     {
-        [SerializeField] private float damage = 20f;
+        [SerializeField] private int damage = 20;
 
         public float Damage => damage;
     }

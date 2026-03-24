@@ -1,5 +1,6 @@
 using _Pr2.Scripts.UI;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace _Pr2.Scripts.Core
 {
@@ -7,12 +8,14 @@ namespace _Pr2.Scripts.Core
     {
         public static GameManager Instance { get; private set; }
 
-        [SerializeField] private float maxHealth = 100f;
-        [SerializeField] private float healPerTick = 10f;
+        [SerializeField] private int maxHealth = 100;
+        [SerializeField] private int healPerTick = 10;
+        [SerializeField] private int minHealCost = 1;
         [SerializeField] private int costPerTick = 1;
         [SerializeField] private GameObject gameOverObject;
         [SerializeField] private HealthBar healthBar;
         [SerializeField] private ScoreUI scoreUI;
+        [SerializeField] private HealButtonUI healButtonUI;
 
         private float currentHealth;
         private int score;
@@ -42,6 +45,7 @@ namespace _Pr2.Scripts.Core
 
             currentHealth = Mathf.Max(0f, currentHealth - damage);
             healthBar?.UpdateBar(currentHealth, maxHealth);
+            RefreshHealButton();
 
             if (currentHealth <= 0f)
             {
@@ -58,11 +62,12 @@ namespace _Pr2.Scripts.Core
 
             score += scoreAmount;
             scoreUI?.UpdateScore(score);
+            RefreshHealButton();
         }
 
         public bool TryHealTick()
         {
-            if (isGameOver || score < healPerTick || currentHealth >= maxHealth)
+            if (isGameOver || score < minHealCost || currentHealth >= maxHealth)
             {
                 return false;
             }
@@ -73,10 +78,24 @@ namespace _Pr2.Scripts.Core
             return true;
         }
 
+        public bool TryFullHealFromButton()
+        {
+            if (isGameOver || score < minHealCost || currentHealth >= maxHealth)
+            {
+                return false;
+            }
+
+            score -= minHealCost;
+            currentHealth = maxHealth;
+            RefreshUI();
+            return true;
+        }
+
         private void TriggerGameOver()
         {
             isGameOver = true;
             Time.timeScale = 0f;
+            RefreshHealButton();
 
             if (gameOverObject)
             {
@@ -84,10 +103,21 @@ namespace _Pr2.Scripts.Core
             }
         }
 
+        public void ReturnToMenu()
+        {
+            SceneManager.LoadScene("MainMenu");
+        }
+
         private void RefreshUI()
         {
             healthBar?.UpdateBar(currentHealth, maxHealth);
             scoreUI?.UpdateScore(score);
+            RefreshHealButton();
+        }
+
+        private void RefreshHealButton()
+        {
+            healButtonUI?.SetInteractable(!isGameOver && score >= minHealCost && currentHealth < maxHealth);
         }
     }
 }
